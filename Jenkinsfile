@@ -43,14 +43,26 @@ pipeline{
                     sh 'mvn clean install'
                 }
             }
-        }
+        } 
+        stage('Sonar Analysis'){
+            environment{
+                     scannerHome = tool 'sonar4.8'
+            }
 
-         stage('SonarQube analysis') {
-           def scannerHome = tool 'SonarScanner 4.8';
-           withSonarQubeEnv('sonar-token1') { // If you have configured more than one global server connection, you can specify its name
-            sh "${scannerHome}/bin/sonar-scanner"
-       }
-    } 
+         steps {
+            withSonarQubeEnv('sonar-token1') {
+               sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=nexus_helm_cicd_app \
+                   -Dsonar.projectName=nexus_helm_cicd_app \
+                   -Dsonar.projectVersion=1.0 \
+                   -Dsonar.sources=src/ \
+                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
+            }
+         }
+
+         
    }
 
 }
