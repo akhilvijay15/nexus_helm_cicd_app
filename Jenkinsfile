@@ -50,7 +50,7 @@ pipeline{
             }
 
          steps {
-            withSonarQubeEnv('sonarserver') {
+            withSonarQubeEnv('sonar') {
                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=nexus_helm_cicd_app \
                    -Dsonar.projectName=nexus_helm_cicd_app \
                    -Dsonar.projectVersion=1.0 \
@@ -61,6 +61,19 @@ pipeline{
                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
             }
          }
-       }
-    }
-}          
+
+         stage("Quality Gate") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = dont
+                    waitForQualityGate abortPipeline: true
+
+               }  
+           }
+        }
+  }
+}       
+}
+
+          
