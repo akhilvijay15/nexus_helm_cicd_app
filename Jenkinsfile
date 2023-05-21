@@ -50,7 +50,7 @@ pipeline{
             }
 
          steps {
-            withSonarQubeEnv('sonar') {
+            withSonarQubeEnv('sonarserver') {
                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=nexus_helm_cicd_app \
                    -Dsonar.projectName=nexus_helm_cicd_app \
                    -Dsonar.projectVersion=1.0 \
